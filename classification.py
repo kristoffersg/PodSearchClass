@@ -42,7 +42,7 @@ if num_files == False:
 for _ in range(num_files):
     (rate, sig) = wav.read("splitAudio/chunk" + str(_) + ".wav")
     mfcc_feat = mfcc(sig, rate)                                         # mfcc feature extraction
-    mfcc_feat = [item for sublist in mfcc_feat for item in sublist]     # Flattening
+    mfcc_feat = [item for sublist in mfcc_feat for item in sublist]     # Flattening ******************************************* HER KOM VI TIL *******************************************
     X_test = np.lib.pad(mfcc_feat, (0, 3000-len(mfcc_feat)), 'mean')    # Mean padding
 
     start_time = time.time()  # ______________________________________________________________________________________
