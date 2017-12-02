@@ -8,6 +8,7 @@ from transcriber import transcribe
 from worder import wordcloud_create
 from PIL import ImageTk, Image
 from removeoverlap import removerlap
+from segmentation import segmentwords
 
 
 class PodSearch(object):
@@ -128,6 +129,7 @@ class PodSearch(object):
         wordcloud_path = wordcloud_create(self.transcription)
         self.transcription = removerlap(self.transcription.split(' '))
         self.new_image(wordcloud_path)
+        segmentwords(self.filename)
         
         self.workinglabel.config(text="")  # remove working label
         self.pbar_det.stop()  # Stop progress bar
@@ -169,6 +171,6 @@ class PodSearch(object):
 
 root = Tk()
 b = PodSearch(root)
-root.title("Podcast Searcher TDA")
+root.title("Podcast Searcher Classification")
 root.geometry("650x500+0+200")
 root.mainloop()
