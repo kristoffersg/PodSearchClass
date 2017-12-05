@@ -4,11 +4,13 @@ from Tkinter import Tk, Button, Frame, Label, LEFT, RIGHT, BOTTOM, TOP, BOTH, YE
 from os.path import basename
 from tkFileDialog import askopenfilename
 import ttk
+from searchwords import findwords
 from transcriber import transcribe
 from worder import wordcloud_create
 from PIL import ImageTk, Image
 from removeoverlap import removerlap
 from segmentation import segmentwords
+from classification import knnfunc
 
 
 class PodSearch(object):
@@ -66,18 +68,6 @@ class PodSearch(object):
         self.searchbtn = Button(self.leftsubframe_bot, text="Search", command=self.search)
         self.searchbtn.pack()
 
-        # Word label
-        self.wordlabel = Label(self.bottomframe)
-        self.wordlabel.pack()
-
-        # Timestamp label
-        self.timestamplabel = Label(self.bottomframe)
-        self.timestamplabel.pack()
-
-        # estimate label
-        self.estimatelabel = Label(self.bottomframe)
-        self.estimatelabel.pack()
-
         # Working Label
         self.workinglabel = Label(self.bottomframe)
         self.workinglabel.pack()
@@ -108,17 +98,11 @@ class PodSearch(object):
     # Browse function
     def browse(self):
         '''browse for file'''
-        if self.wordlabel != "":  # clear the labels if necessary
-            self.wordlabel.config(text="")
-            self.pathlabel.config(text="")
-            self.timestamplabel.config(text="")
-            self.estimatelabel.config(text="")
         self.filename = askopenfilename()  # openfile dialog and put file in filename
         if not self.filename:  # leave method if cancel is clicked
+            self.pathlabel.config(text="")
             return
         self.pathlabel.config(text=basename(self.filename))  # show filename as label
-        if self.filename.endswith('.txt'):
-            return
         self.workinglabel.config(text="WORKING", font=(
             "Helvetica", 20))  # Show WORKING when transcribing
         self.pbar_det.pack()  # show the progress bar
@@ -129,12 +113,12 @@ class PodSearch(object):
         wordcloud_path = wordcloud_create(self.transcription)
         self.transcription = removerlap(self.transcription.split(' '))
         self.new_image(wordcloud_path)
-        segmentwords(self.filename)
-        
+        stamp = segmentwords(self.filename)
+        self.indexarray = knnfunc(stamp)
+
         self.workinglabel.config(text="")  # remove working label
         self.pbar_det.stop()  # Stop progress bar
         self.pbar_det.pack_forget()  # Remove progress bar
-
 
     # Search function
     def search(self):
@@ -142,24 +126,13 @@ class PodSearch(object):
         if not self.transcription == '':
             if not self.searchentry.get() == '':
                 keyword = self.searchentry.get()  # Get entry from textbox
-
-                # *********************************************************************************
-                # Here coes code
-                # *********************************************************************************
-
-                # Write result to label
-                if wordlabel != "Word number":
-                    self.wordlabel.config(text=wordlabel)
-                    self.estimatelabel.config(text=time)
-                    self.timestamplabel.config(text=timestamplabel)
-                else:
-                    self.wordlabel.config(text="Word not found")
-                    self.timestamplabel.config(text="")
-                    self.estimatelabel.config(text="")
+                timestamp = findwords(keyword, self.indexarray)
+                self.workinglabel.config(text=timestamp, font=(
+            "Helvetica", 14))
             else:
-                self.wordlabel.config(text="Enter word in search field")
+                self.workinglabel.config(text="Enter word in search field")
         else:
-            self.timestamplabel.config(text="No file selected")
+            self.workinglabel.config(text="No file selected")
 
     def new_image(self, path):
         '''Word Cloud image'''
@@ -172,5 +145,5 @@ class PodSearch(object):
 root = Tk()
 b = PodSearch(root)
 root.title("Podcast Searcher Classification")
-root.geometry("650x500+0+200")
+root.geometry("650x450+0+200")
 root.mainloop()

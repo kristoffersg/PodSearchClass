@@ -8,6 +8,7 @@ def removerlap(words):
     cnt = 1
     start = counter
     transcription = ""
+    rest = ' '
     for _ in words[2:len(words)-1]:
         counter += 1
         if _ == "--":
