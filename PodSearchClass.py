@@ -127,8 +127,7 @@ class PodSearch(object):
             if not self.searchentry.get() == '':
                 keyword = self.searchentry.get()  # Get entry from textbox
                 timestamp = findwords(keyword, self.indexarray)
-                self.workinglabel.config(text=timestamp, font=(
-            "Helvetica", 14))
+                self.workinglabel.config(text=timestamp, font=("Helvetica", 14))
             else:
                 self.workinglabel.config(text="Enter word in search field")
         else:

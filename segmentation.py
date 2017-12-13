@@ -1,3 +1,4 @@
+'''Module to segment audio stream in words'''
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 
@@ -11,5 +12,4 @@ def segmentwords(filename):
         out_file = ".//splitAudio//chunk{0}.wav".format(i)
         # print "exporting", out_file
         chunk.export(out_file, format="wav")
-        
     return stamp
